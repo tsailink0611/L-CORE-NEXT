@@ -9,6 +9,7 @@ import {
   onAuthStateChanged
 } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
+import { createUserProfile, getUserProfile } from '@/lib/firestore'
 
 interface AuthContextType {
   user: User | null
@@ -33,7 +34,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Check if user profile exists, create if not
+        const profile = await getUserProfile(user.uid)
+        if (!profile) {
+          await createUserProfile(user.uid, user.email!, user.displayName || undefined)
+        }
+      }
       setUser(user)
       setLoading(false)
     })
@@ -52,7 +60,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string) => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password)
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+      // Create user profile in Firestore
+      await createUserProfile(userCredential.user.uid, email)
     } catch (error) {
       console.error('Sign up error:', error)
       throw error
