@@ -2,29 +2,36 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/contexts/AuthContext'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [showDemo, setShowDemo] = useState(false)
+  const [error, setError] = useState('')
+  const { signIn } = useAuth()
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError('')
     setIsLoading(true)
 
-    // Simulate login process
-    setTimeout(() => {
+    try {
+      await signIn(email, password)
+      router.push('/dashboard')
+    } catch (error: any) {
+      console.error('Login error:', error)
+      setError('ログインに失敗しました。メールアドレスまたはパスワードをご確認ください。')
+    } finally {
       setIsLoading(false)
-      // Redirect to dashboard (would be handled by router in real app)
-      console.log('Login successful:', { email, password })
-    }, 1500)
+    }
   }
 
   const handleDemoLogin = () => {
     setEmail('admin@l-core.com')
     setPassword('admin123')
-    setShowDemo(true)
   }
 
   return (
@@ -69,6 +76,17 @@ export default function LoginPage() {
               </div>
             </div>
           </div>
+
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex">
+                <svg className="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="text-red-800 text-sm">{error}</span>
+              </div>
+            </div>
+          )}
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
@@ -149,18 +167,6 @@ export default function LoginPage() {
               </button>
             </div>
           </form>
-
-          {/* Demo Credentials Display */}
-          {showDemo && (
-            <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-              <div className="flex items-center">
-                <svg className="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span className="text-green-800 font-medium">デモ認証情報が読み込まれました！</span>
-              </div>
-            </div>
-          )}
 
           <div className="mt-6">
             <div className="relative">
