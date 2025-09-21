@@ -12,7 +12,7 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    
+
     // Simulate login process
     setTimeout(() => {
       setIsLoading(false)
@@ -22,8 +22,8 @@ export default function LoginPage() {
   }
 
   const handleDemoLogin = () => {
-    setEmail('demo@l-core.com')
-    setPassword('demo123')
+    setEmail('admin@l-core.com')
+    setPassword('admin123')
     setShowDemo(true)
   }
 
@@ -56,6 +56,10 @@ export default function LoginPage() {
                 <p className="text-sm text-blue-700 mb-3">
                   デモ認証情報でプラットフォームのすべての機能をお試しください。
                 </p>
+                <div className="text-sm text-blue-700 mb-3 bg-blue-100 p-2 rounded">
+                  <p><strong>メール:</strong> admin@l-core.com</p>
+                  <p><strong>パスワード:</strong> admin123</p>
+                </div>
                 <button
                   onClick={handleDemoLogin}
                   className="text-blue-600 hover:text-blue-700 font-medium text-sm underline"
@@ -155,10 +159,6 @@ export default function LoginPage() {
                 </svg>
                 <span className="text-green-800 font-medium">デモ認証情報が読み込まれました！</span>
               </div>
-              <div className="mt-2 text-sm text-green-700">
-                <p><strong>メール:</strong> demo@l-core.com</p>
-                <p><strong>パスワード:</strong> demo123</p>
-              </div>
             </div>
           )}
 
@@ -203,8 +203,8 @@ export default function LoginPage() {
         </div>
 
         <div className="mt-4 text-center">
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="text-sm text-gray-500 hover:text-gray-700"
           >
             ← ホームに戻る
